@@ -21,7 +21,7 @@ namespace OdApp
 
         static async Task Main(string[] args)
         {
-            // object? TRASH = null;
+            object? TRASH = null;
             IPublicClientApplication appIPCA = PublicClientApplicationBuilder.Create(myApplicationID)
                 // Use a global variable that has the registered tenant ID in a GUID variable.
                 .WithAuthority(AzureCloudInstance.AzurePublic, thisTenantID.ToString())
