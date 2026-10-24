@@ -25,7 +25,15 @@ namespace ComLocCon
 
             if (ICommon.TargetEnvironment.Windows == targetEnvironment) {
                 string currentServerName = _Server.RunningApplicationServerName();
-                _Server win10Or11Functions = new _Server(currentServerName);
+                _Server thisServer = new _Server(currentServerName);
+                foreach (var sessionInfo in thisServer.EnumerateSessions()) {
+                    Console.WriteLine($"Session ID: {sessionInfo.SessionId} ({sessionInfo.WinStationName}), State: {sessionInfo.State}");
+                    Dictionary<int, string> allSessionInformation = thisServer.GetAllSessionInformation();
+                    foreach (KeyValuePair<int, string> pair in allSessionInformation) {
+                        Console.WriteLine($"\t{pair.Key}: {pair.Value}");
+                    }
+                }
+                Environment.Exit(0);
             }
 
             Environment.Exit(0);

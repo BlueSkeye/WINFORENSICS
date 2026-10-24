@@ -2,7 +2,10 @@
 
 namespace IWin10Or11Functions
 {
-    internal class NativeWtsapi32
+    /// <summary>This class is public because it uses some enumeration and structure definitions that
+    /// are needed by the ultimate calling code outside of this assembly. Later this class will be made
+    /// internal when returned values remain in this assembly.</summary>
+    public class NativeWtsapi32
     {
         private const string WTSAPI32_DLL = "wtsapi32.dll";
 
@@ -20,13 +23,41 @@ namespace IWin10Or11Functions
             WTSInit
         }
 
+        /// <summary>See : https://learn.microsoft.com/en-us/windows/win32/api/wtsapi32/ne-wtsapi32-wts_info_class</summary>
         public enum WTS_INFO_CLASS
         {
+            WTSInitialProgram = 0,
+            WTSApplicationName,
+            WTSWorkingDirectory,
+            WTSOEMId,
+            WTSSessionId,
             WTSUserName = 5,
+            WTSWinStationName,
             WTSDomainName = 7,
             WTSConnectState = 8,
+            WTSClientBuildNumber,
+            WTSClientName,
+            WTSClientDirectory,
+            WTSClientProductId,
+            WTSClientHardwareId,
+            WTSClientAddress,
+            WTSClientDisplay,
+            WTSClientProtocolType,
             WTSIdleTime = 17,
-            WTSLogonTime = 18
+            WTSLogonTime = 18,
+            WTSIncomingBytes,
+            WTSOutgoingBytes,
+            WTSIncomingFrames,
+            WTSOutgoingFrames,
+            WTSClientInfo,
+            WTSSessionInfo,
+            WTSSessionInfoEx,
+            WTSConfigInfo,
+            WTSValidationInfo,
+            WTSSessionAddressV4,
+            WTSIsRemoteSession,
+            WTSSessionActivityId,
+            WTSCapabilityCheck
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -35,6 +66,13 @@ namespace IWin10Or11Functions
             public uint SessionId;
             public IntPtr pWinStationName;
             public WTS_CONNECTSTATE_CLASS State;
+
+            public string? WinStationName
+            {
+                get {
+                    return (nint.Zero != pWinStationName) ? Marshal.PtrToStringUni(pWinStationName) : null;
+                }
+            }
         }
 
         [DllImport(WTSAPI32_DLL)]
@@ -51,6 +89,8 @@ namespace IWin10Or11Functions
         [DllImport(WTSAPI32_DLL, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr WTSOpenServerExW([MarshalAs(UnmanagedType.LPWStr)] string pServerName);
 
+        /// <summary>See :
+        /// https://learn.microsoft.com/en-us/windows/win32/api/wtsapi32/nf-wtsapi32-wtsquerysessioninformationw</summary>
         [DllImport(WTSAPI32_DLL, CharSet = CharSet.Unicode, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool WTSQuerySessionInformationW(IntPtr hServer, uint SessionId, WTS_INFO_CLASS WTSInfoClass,
